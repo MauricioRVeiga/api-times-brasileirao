@@ -35,3 +35,12 @@ export async function remove(req, res) {
   if (!team) return res.status(404).json({ error: "Time não encontrado" })
   res.json({ message: "Time removido com sucesso" })
 }
+
+export async function removeAll(req, res) {
+  try {
+    await service.removerTodosTimes()
+    res.json({ message: "Todos os times foram removidos com sucesso" })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}

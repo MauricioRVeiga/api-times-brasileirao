@@ -19,3 +19,7 @@ export async function atualizarTime(id, dados) {
 export async function removerTime(id) {
   return await Team.findByIdAndDelete(id)
 }
+
+export async function removerTodosTimes() {
+  return await Team.deleteMany({})
+}
