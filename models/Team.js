@@ -20,4 +20,4 @@ const TeamSchema = new mongoose.Schema({
   temporada: { type: Number, default: 2025 }
 }, { timestamps: true })
 
-export default mongoose.model("Team", TeamSchema)
+export default mongoose.model("Team", TeamSchema, "times");
