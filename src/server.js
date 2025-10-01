@@ -37,13 +37,12 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // Servir arquivos estáticos do React
-app.use(express.static(path.join(__dirname, "../frontend/build")))
+app.use(express.static(path.join(__dirname, "../frontend/build")));
 
 // Fallback: qualquer rota que não seja da API devolve o React
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"))
-})
-// -------------------------
+app.get(/^(?!\/api|\/campeonatos|\/teams).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+});
 
 const port = process.env.PORT || 4000
 app.listen(port, () => console.log(`🚀 Servidor rodando em http://localhost:${port}`))

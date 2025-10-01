@@ -25,6 +25,10 @@ export async function removerCampeonato(id) {
   return await Championship.findByIdAndDelete(id);
 }
 
+export async function removerTodosCampeonatos() {
+  return await Championship.deleteMany({});
+}
+
 export async function adicionarTimes(id, teamIds) {
   return await Championship.findByIdAndUpdate(
     id,

@@ -1,6 +1,12 @@
 import Match from "../models/Match.js";
 import Championship from "../models/Championship.js";
 
+export async function listarRodada(campeonatoId, rodada) {
+  return await Match.find({ campeonato: campeonatoId, rodada })
+    .populate("mandante", "nome")   // 👈 popula só o campo nome
+    .populate("visitante", "nome"); // 👈 idem
+}
+
 export async function listarPartidas(campeonatoId) {
   return await Match.find({ campeonato: campeonatoId }).populate(
     "mandante visitante campeonato"

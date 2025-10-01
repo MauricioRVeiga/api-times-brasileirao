@@ -40,3 +40,16 @@ export async function getClassificacao(req, res) {
     res.status(400).json({ error: err.message });
   }
 }
+
+export async function getRodada(req, res) {
+  try {
+    const { id, rodada } = req.params;
+    const jogos = await service.listarRodada(id, rodada);
+    if (!jogos || jogos.length === 0) {
+      return res.status(404).json({ error: "Rodada não encontrada" });
+    }
+    res.json(jogos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}

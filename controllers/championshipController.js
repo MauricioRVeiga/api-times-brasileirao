@@ -1,4 +1,11 @@
 import * as service from "../services/championshipService.js";
+import { calcularClassificacao } from "../services/classificationService.js";
+
+export async function getClassificacao(req, res) {
+  const { id } = req.params;
+  const tabela = await calcularClassificacao(id);
+  res.json(tabela);
+}
 
 export async function getAll(req, res) {
   const campeonatos = await service.listarCampeonatos();
@@ -56,5 +63,14 @@ export async function addTeams(req, res) {
     res.json(campeonato);
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+}
+
+export async function removeAll(req, res) {
+  try {
+    await service.removerTodosCampeonatos();
+    res.json({ message: "Todos os campeonatos foram removidos com sucesso" });
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao remover campeonatos" });
   }
 }

@@ -1,7 +1,7 @@
-import Classificacao from "./Classificacao";
+import Campeonato from "./pages/Campeonato";
 
 function App() {
-  return <Classificacao />;
+  return <Campeonato />;
 }
 
 export default App;
