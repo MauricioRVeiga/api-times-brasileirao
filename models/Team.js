@@ -8,6 +8,7 @@ const PlayerSchema = new mongoose.Schema({
 
 const TeamSchema = new mongoose.Schema({
   nome: { type: String, required: true, unique: true },
+  logo: { type: String }, // 👈 campo para o escudo
   estado: String,
   cidade: String,
   fundacao: Number,

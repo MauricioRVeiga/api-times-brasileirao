@@ -1,4 +1,6 @@
 import * as service from "../services/matchService.js";
+import Match from "../models/Match.js"; // 👈 necessário para removeByCampeonato
+import Partida from "../models/Partida.js";
 
 export async function getAll(req, res) {
   const partidas = await service.listarPartidas(req.params.campeonatoId);
@@ -53,3 +55,35 @@ export async function getRodada(req, res) {
     res.status(500).json({ error: err.message });
   }
 }
+
+export async function removeByCampeonato(req, res) {
+  try {
+    const { campeonatoId } = req.params;
+    const result = await Match.deleteMany({ campeonato: campeonatoId });
+    res.json({ message: `Foram removidas ${result.deletedCount} partidas do campeonato.` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+export const updatePartida = async (req, res) => {
+  try {
+    const { partidaId } = req.params;
+    const { golsMandante, golsVisitante } = req.body;
+
+    const partida = await Partida.findByIdAndUpdate(
+      partidaId,
+      { golsMandante, golsVisitante },
+      { new: true }
+    );
+
+    if (!partida) {
+      return res.status(404).json({ message: "Partida não encontrada" });
+    }
+
+    res.json(partida);
+  } catch (err) {
+    console.error("Erro ao atualizar partida:", err);
+    res.status(500).json({ message: "Erro no servidor" });
+  }
+};

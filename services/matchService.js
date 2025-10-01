@@ -3,8 +3,8 @@ import Championship from "../models/Championship.js";
 
 export async function listarRodada(campeonatoId, rodada) {
   return await Match.find({ campeonato: campeonatoId, rodada })
-    .populate("mandante", "nome")   // 👈 popula só o campo nome
-    .populate("visitante", "nome"); // 👈 idem
+    .populate("mandante")
+    .populate("visitante");
 }
 
 export async function listarPartidas(campeonatoId) {
@@ -14,11 +14,9 @@ export async function listarPartidas(campeonatoId) {
 }
 
 export async function criarPartida(dados) {
-  // Se for array, insere várias partidas de uma vez
   if (Array.isArray(dados)) {
     return await Match.insertMany(dados);
   }
-  // Se for objeto único, insere só uma
   return await Match.create(dados);
 }
 
@@ -31,14 +29,13 @@ export async function removerPartida(id) {
 }
 
 export async function gerarClassificacao(campeonatoId) {
-  const campeonato = await Championship.findById(campeonatoId).populate(
-    "participantes"
-  );
+  const campeonato = await Championship.findById(campeonatoId).populate("participantes");
   const partidas = await Match.find({ campeonato: campeonatoId });
 
   const tabela = campeonato.participantes.map((team) => ({
     timeId: team._id,
-    time: team.nome,
+    nome: team.nome,
+    logo: team.logo,
     jogos: 0,
     vitorias: 0,
     empates: 0,
@@ -52,16 +49,15 @@ export async function gerarClassificacao(campeonatoId) {
   partidas.forEach((p) => {
     const mandante = tabela.find((t) => t.timeId.equals(p.mandante));
     const visitante = tabela.find((t) => t.timeId.equals(p.visitante));
-
     if (!mandante || !visitante) return;
 
     mandante.jogos++;
     visitante.jogos++;
 
-    mandante.golsPro += p.golsMandante;
-    mandante.golsContra += p.golsVisitante;
-    visitante.golsPro += p.golsVisitante;
-    visitante.golsContra += p.golsMandante;
+    mandante.golsPro += p.golsMandante ?? 0;
+    mandante.golsContra += p.golsVisitante ?? 0;
+    visitante.golsPro += p.golsVisitante ?? 0;
+    visitante.golsContra += p.golsMandante ?? 0;
 
     if (p.golsMandante > p.golsVisitante) {
       mandante.vitorias++;

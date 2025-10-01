@@ -4,13 +4,14 @@ import Championship from "../models/Championship.js";
 import Match from "../models/Match.js";
 import Team from "../models/Team.js";
 
-dotenv.config(); // carrega as variáveis do .env
+dotenv.config();
 
 async function generateRounds(campeonatoId) {
   const campeonato = await Championship.findById(campeonatoId).populate("participantes");
   if (!campeonato) throw new Error("Campeonato não encontrado");
 
-  const teams = campeonato.participantes.map((t) => t._id.toString());
+  // 👇 mantém como ObjectId, sem .toString()
+  const teams = campeonato.participantes.map((t) => t._id);
   if (teams.length !== 20) throw new Error("É necessário ter 20 times cadastrados");
 
   let rodada = 1;
@@ -56,12 +57,9 @@ async function generateRounds(campeonatoId) {
 
 async function main() {
   try {
-    // conecta no mesmo banco que sua API (usando .env)
     await mongoose.connect(process.env.MONGODB_URI);
 
-    // coloque aqui o ID do campeonato criado no Insomnia
-    const campeonatoId = "68dc6a973de529c4324199bd";
-
+    const campeonatoId = "68dd2534f8b3a7ea227ce92d"; // seu campeonato
     await generateRounds(campeonatoId);
   } catch (err) {
     console.error("Erro:", err.message);

@@ -1,41 +1,62 @@
 import { useState } from "react";
-import Rodada from "../components/Rodada";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Tabs,
+  Tab,
+  Box,
+  Container,
+} from "@mui/material";
+
 import Classificacao from "../components/Classificacao";
 
 export default function Campeonato() {
-  // 👉 Coloque aqui o ID real do campeonato que você criou no banco
-  const campeonatoId = "68dc6a973de529c4324199bd"; 
-  const [rodada, setRodada] = useState(1);
-  const [refreshClassificacao, setRefreshClassificacao] = useState(false);
+  const { campeonatoId } = useParams(); // pega o ID da URL
+  const [tab, setTab] = useState(0);
+  const [refreshClassificacao] = useState(false);
+  const navigate = useNavigate();
 
-  const handlePalpitar = () => {
-    // Depois de palpitar, atualiza a classificação
-    setRefreshClassificacao(!refreshClassificacao);
-
-    // Avança para a próxima rodada automaticamente (se quiser)
-    if (rodada < 38) {
-      setRodada(rodada + 1);
+  const handleChangeTab = (event, newValue) => {
+    setTab(newValue);
+    if (newValue === 0) {
+      // 👉 se clicar em "Rodadas", redireciona para a rodada 1
+      navigate(`/campeonatos/${campeonatoId}/rodadas/1`);
     }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Campeonato Brasileiro</h1>
+    <Box sx={{ flexGrow: 1 }}>
+      {/* Cabeçalho */}
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Campeonato Brasileiro 2025
+          </Typography>
+        </Toolbar>
+      </AppBar>
 
-      {/* Jogos da rodada */}
-      <Rodada
-        campeonatoId={campeonatoId}
-        rodada={rodada}
-        onPalpitar={handlePalpitar}
-      />
+      {/* Tabs de navegação */}
+      <AppBar position="static" color="default">
+        <Tabs
+          value={tab}
+          onChange={handleChangeTab}
+          indicatorColor="primary"
+          textColor="primary"
+          centered
+        >
+          <Tab label="Rodadas" />
+          <Tab label="Classificação" />
+        </Tabs>
+      </AppBar>
 
-      <hr style={{ margin: "20px 0" }} />
-
-      {/* Classificação atualizada */}
-      <Classificacao
-        campeonatoId={campeonatoId}
-        key={refreshClassificacao} // força recarregar quando palpitar
-      />
-    </div>
+      {/* Conteúdo */}
+      <Container sx={{ marginTop: 4 }}>
+        {tab === 1 && (
+          <Classificacao campeonatoId={campeonatoId} key={refreshClassificacao} />
+        )}
+      </Container>
+    </Box>
   );
 }

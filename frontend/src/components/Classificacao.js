@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../api";
 import {
   Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Typography
+  TableHead, TableRow, Paper, Typography, Avatar, Box
 } from "@mui/material";
 
 export default function Classificacao({ campeonatoId }) {
@@ -36,7 +36,12 @@ export default function Classificacao({ campeonatoId }) {
             {tabela.map((t, index) => (
               <TableRow key={t.timeId}>
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>{t.nome}</TableCell>
+                <TableCell>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Avatar src={t.logo} alt={t.nome} sx={{ mr: 1 }} />
+                    {t.nome}
+                  </Box>
+                </TableCell>
                 <TableCell>{t.pontos}</TableCell>
                 <TableCell>{t.vitorias}</TableCell>
                 <TableCell>{t.empates}</TableCell>
