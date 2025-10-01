@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import Championship from "../models/Championship.js";
-import Match from "../models/Match.js";
-import Team from "../models/Team.js";
+import Championship from "./models/Championship.js";
+import Match from "./models/Match.js";
+import "./models/Team.js";
 
 dotenv.config();
 
@@ -10,14 +10,12 @@ async function generateRounds(campeonatoId) {
   const campeonato = await Championship.findById(campeonatoId).populate("participantes");
   if (!campeonato) throw new Error("Campeonato não encontrado");
 
-  // 👇 mantém como ObjectId, sem .toString()
   const teams = campeonato.participantes.map((t) => t._id);
   if (teams.length !== 20) throw new Error("É necessário ter 20 times cadastrados");
 
   let rodada = 1;
   const matches = [];
 
-  // Algoritmo round-robin (turno)
   const totalRodadas = teams.length - 1; // 19 rodadas
   const metade = teams.length / 2;
   let lista = [...teams];
@@ -29,19 +27,17 @@ async function generateRounds(campeonatoId) {
 
       matches.push({
         campeonato: campeonatoId,
-        rodada: rodada,
+        rodada,
         mandante,
         visitante,
         golsMandante: null,
         golsVisitante: null,
       });
     }
-    // Rotaciona os times (fixando o primeiro)
-    lista.splice(1, 0, lista.pop());
+    lista.splice(1, 0, lista.pop()); // rotaciona
     rodada++;
   }
 
-  // Returno (inverte mandos)
   const returno = matches.map((m) => ({
     campeonato: campeonatoId,
     rodada: m.rodada + totalRodadas,
@@ -57,15 +53,20 @@ async function generateRounds(campeonatoId) {
 
 async function main() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI, { dbName: "api_futebol" });
 
-    const campeonatoId = "68dd2534f8b3a7ea227ce92d"; // seu campeonato
-    await generateRounds(campeonatoId);
+    // Busca o campeonato pela temporada
+    const campeonato = await Championship.findOne({ temporada: 2025 });
+    if (!campeonato) throw new Error("Campeonato não encontrado");
+
+    await generateRounds(campeonato._id);
   } catch (err) {
-    console.error("Erro:", err.message);
+    console.error("❌ Erro:", err.message);
   } finally {
     mongoose.disconnect();
   }
 }
 
 main();
+
+export default generateRounds;

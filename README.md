@@ -38,14 +38,6 @@ npm install
 echo "MONGODB_URI=<sua-string-de-conexao>" > .env
 echo "PORT=4000" >> .env
 
-# Execute em modo desenvolvimento
-npm run dev
-```
-
-Acesse em: [http://localhost:4000](http://localhost:4000)
-
----
-
 ### 🔹 Front-end
 ```bash
 # Entre na pasta
@@ -54,12 +46,15 @@ cd frontend
 # Instale as dependências
 npm install
 
-# Execute em modo desenvolvimento
-npm start
-
 # Para produção (servido pelo Express)
 npm run build
 ```
+
+# Execute em modo desenvolvimento
+npm run dev
+```
+
+Acesse em: [http://localhost:4000](http://localhost:4000)
 
 ---
 

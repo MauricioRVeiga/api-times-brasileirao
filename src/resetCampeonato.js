@@ -1,42 +1,30 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import Match from "../models/Match.js";
-import Championship from "../models/Championship.js";
-import generateRounds from "./generateRounds.js"; // importa sua função já pronta
+import Match from "./models/Match.js";
+import Championship from "./models/Championship.js";
+import generateRounds from "./generateRounds.js";
+import "./models/Team.js"; // garante que o schema Team esteja registrado
 
 dotenv.config();
 
-async function resetCampeonato(campeonatoId) {
+async function resetCampeonato(temporada) {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI, { dbName: "api_futebol" });
     console.log("✅ Conectado ao MongoDB");
 
-    // Verifica se o campeonato existe
-    const campeonato = await Championship.findById(campeonatoId);
-    if (!campeonato) {
-      throw new Error("Campeonato não encontrado");
-    }
+    // Busca o campeonato pela temporada
+    const campeonato = await Championship.findOne({ temporada });
+    if (!campeonato) throw new Error(`Nenhum campeonato encontrado para ${temporada}`);
 
-    // Apaga todas as partidas do campeonato
-    const result = await Match.deleteMany({ campeonato: campeonatoId });
-    console.log(`🗑️  ${result.deletedCount} partidas removidas do campeonato.`);
+    console.log(`🏆 Campeonato encontrado: ${campeonato.nome} (${campeonato._id})`);
 
-    // Gera novamente as rodadas
-    await generateRounds(campeonatoId);
-    console.log("🏆 Rodadas recriadas com sucesso!");
+    // Remove partidas antigas
+    const result = await Match.deleteMany({ campeonato: campeonato._id });
+    console.log(`🗑️  ${result.deletedCount} partidas removidas.`);
 
-    // Mostra a primeira rodada
-    const primeiraRodada = await Match.find({
-      campeonato: campeonatoId,
-      rodada: 1,
-    })
-      .populate("mandante")
-      .populate("visitante");
-
-    console.log("📅 Primeira rodada:");
-    primeiraRodada.forEach((jogo) => {
-      console.log(`${jogo.mandante.nome} x ${jogo.visitante.nome}`);
-    });
+    // Gera rodadas novas
+    await generateRounds(campeonato._id);
+    console.log("📅 Rodadas recriadas com sucesso!");
 
     process.exit();
   } catch (err) {
@@ -45,6 +33,5 @@ async function resetCampeonato(campeonatoId) {
   }
 }
 
-// 👉 Troque aqui pelo ID do campeonato que você criou
-const campeonatoId = "68dd2534f8b3a7ea227ce92d"; // ID do Brasileirão Série A 2025
-resetCampeonato(campeonatoId);
+// Aqui você só passa a temporada, não o ID
+resetCampeonato(2025);
