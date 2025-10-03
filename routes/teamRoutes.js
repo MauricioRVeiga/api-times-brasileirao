@@ -1,13 +1,13 @@
-import { Router } from "express"
-import * as controller from "../controllers/teamController.js"
+const express = require("express");
+const router = express.Router();
+const teamController = require("../controllers/teamController");
+const authMiddleware = require("../middleware/authMiddleware");
 
-const router = Router()
+// Todas as rotas de times exigem token
+router.get("/teams", authMiddleware, teamController.getAll);
+router.get("/teams/:id", authMiddleware, teamController.getById);
+router.post("/teams", authMiddleware, teamController.create);
+router.put("/teams/:id", authMiddleware, teamController.update);
+router.delete("/teams/:id", authMiddleware, teamController.remove);
 
-router.get("/", controller.getAll)
-router.get("/:id", controller.getById)
-router.post("/", controller.create)
-router.put("/:id", controller.update)
-router.delete("/:id", controller.remove)
-router.delete("/", controller.removeAll)
-
-export default router
+module.exports = router;

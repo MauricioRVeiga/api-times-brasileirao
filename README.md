@@ -1,117 +1,135 @@
-# ⚽ API Times do Campeonato Brasileiro 2025
+# API Times Brasileirão
 
-## 📖 Descrição
-API REST desenvolvida em **Node.js, Express e MongoDB Atlas**.  
-O sistema permite gerenciar **times, campeonatos, partidas e classificação da Série A do Brasileirão 2025**.  
-Inclui também um **front-end em React com Material UI** para exibir a tabela de classificação.
+API RESTful desenvolvida em Node.js + Express + MongoDB para gerenciar times do Campeonato Brasileiro. Inclui autenticação com JWT para proteger as rotas.
 
----
+## 🚀 Tecnologias
 
-## 🚀 Tecnologias Utilizadas
+- Node.js
+- Express
+- MongoDB + Mongoose
+- JWT (Json Web Token)
+- Bcrypt.js
 
-- **Node.js** – Ambiente de execução JavaScript  
-- **Express** – Framework para criação de APIs REST  
-- **MongoDB Atlas** – Banco de dados NoSQL na nuvem  
-- **Mongoose** – ODM para modelagem dos dados  
-- **Nodemon** – Hot reload em desenvolvimento  
-- **Dotenv** – Variáveis de ambiente  
-- **Morgan** – Logger de requisições HTTP  
-- **CORS** – Controle de acesso entre origens  
-- **React + Material UI** – Front-end para exibição da classificação  
+## 📂 Estrutura do Projeto
 
----
-
-## ⚙️ Instalação e Execução
-
-### 🔹 Back-end
-```bash
-# Clone o repositório
-git clone https://github.com/SEU_USUARIO/api-times-brasileirao.git
-
-# Entre na pasta
-cd api-times-brasileirao
-
-# Instale as dependências
-npm install
-
-# Crie o arquivo .env com as variáveis
-echo "MONGODB_URI=<sua-string-de-conexao>" > .env
-echo "PORT=4000" >> .env
-
-### 🔹 Front-end
-```bash
-# Entre na pasta
-cd frontend
-
-# Instale as dependências
-npm install
-
-# Para produção (servido pelo Express)
-npm run build
+```
+api-times-brasileirao/
+ ├── models/          # Schemas do Mongoose (User, Team)
+ ├── routes/          # Rotas (authRoutes, teamRoutes)
+ ├── controllers/     # Lógica das rotas
+ ├── services/        # Regras de negócio
+ ├── middleware/      # authMiddleware.js
+ ├── config/          # Conexão com banco
+ ├── seed.js          # Popula times no banco
+ ├── index.js         # Ponto de entrada
+ └── .env             # Variáveis de ambiente
 ```
 
-# Execute em modo desenvolvimento
-npm run dev
+## ⚙️ Configuração
+
+1. Clonar repositório
+   ```bash
+   git clone https://github.com/seu-usuario/api-times-brasileirao.git
+   cd api-times-brasileirao
+   ```
+2. Instalar dependências
+   ```bash
+   npm install
+   ```
+3. Configurar variáveis de ambiente  
+   Crie um arquivo `.env` na raiz com:
+   ```
+   PORT=4000
+   MONGO_URI=sua_string_de_conexao_mongodb
+   JWT_SECRET=sua_chave_secreta_segura
+   ```
+4. Popular o banco com times
+   ```bash
+   node seed.js
+   ```
+5. Rodar servidor
+   ```bash
+   npm run dev
+   ```
+   ou
+   ```bash
+   node index.js
+   ```
+
+## 🔑 Autenticação
+
+### Registrar usuário
+
+`POST /api/register`
+
+```json
+{
+  "username": "mauricio",
+  "password": "123456"
+}
 ```
 
-Acesse em: [http://localhost:4000](http://localhost:4000)
+### Login
 
----
+`POST /api/login`
 
-## 📌 Endpoints da API
+```json
+{
+  "username": "mauricio",
+  "password": "123456"
+}
+```
 
-### Times
-- **POST** `/teams` → Criar um time  
-- **GET** `/teams` → Listar todos os times  
-- **GET** `/teams/:id` → Buscar um time por ID  
-- **PUT** `/teams/:id` → Atualizar um time  
-- **DELETE** `/teams/:id` → Remover um time  
+Resposta:
+```json
+{ "token": "eyJhbGciOiJIUzI1NiIsInR..." }
+```
+Use esse token no header:
 
-### Campeonatos
-- **POST** `/campeonatos` → Criar um campeonato  
-- **GET** `/campeonatos/:id` → Detalhes de um campeonato  
-- **GET** `/campeonatos` → Listar todos os campeonatos  
+```
+Authorization: Bearer <token>
+```
 
-### Partidas
-- **POST** `/campeonatos/:id/partidas` → Cadastrar uma partida  
-- **GET** `/campeonatos/:id/partidas` → Listar todas as partidas de um campeonato  
+## ⚽ Rotas Times (CRUD)
 
-### Classificação
-- **GET** `/campeonatos/:id/partidas/classificacao` → Retorna a tabela de classificação calculada dinamicamente  
+- Listar todos os times  
+  `GET /api/teams`
 
----
+- Buscar time por ID  
+  `GET /api/teams/:id`
 
-## 📊 Banco de Dados
+- Criar novo time  
+  `POST /api/teams`
+  ```json
+  {
+    "nome": "São Paulo",
+    "estado": "SP",
+    "titulos": 6
+  }
+  ```
 
-- **Banco:** `Brasileirao2025`  
+- Atualizar time  
+  `PUT /api/teams/:id`
+  ```json
+  {
+    "nome": "São Paulo FC",
+    "estado": "SP",
+    "titulos": 7
+  }
+  ```
 
-### Coleções
-- `teams` → Times participantes  
-- `campeonatos` → Campeonatos cadastrados  
-- `partidas` → Jogos realizados  
+- Deletar time  
+  `DELETE /api/teams/:id`
 
----
+## 🧪 Testes
 
-## 🧪 Testando com Insomnia ou Postman
+As rotas podem ser testadas no Insomnia ou Postman. Lembre-se de incluir o Bearer Token no header para acessar as rotas protegidas.
 
-1. Crie um campeonato (**POST** `/campeonatos`)  
-2. Cadastre os times (**POST** `/teams`)  
-3. Associe os times ao campeonato  
-4. Insira partidas (**POST** `/campeonatos/:id/partidas`)  
-5. Consulte a classificação (**GET** `/campeonatos/:id/partidas/classificacao`)  
+## 📜 Licença
 
----
+Este projeto é open-source e pode ser usado para fins de estudo.
 
 ## 👨‍💻 Autores
 
 - **Mauricio** – FATEC Registro  
-- **Bruno Davies** – FATEC Registro  
-
----
-
-## 📌 Observações
-
-- IDs são gerados automaticamente pelo MongoDB  
-- O campo `temporada` é definido como **2025** por padrão  
-- Se enviar um ID inválido, a API retorna **400 Bad Request**  
-- Se o recurso não existir, retorna **404 Not Found**  
+- **Bruno Davies** – FATEC Registro

@@ -1,24 +1,14 @@
-import mongoose from "mongoose"
+const mongoose = require("mongoose");
 
-const PlayerSchema = new mongoose.Schema({
-  nome: String,
-  posicao: String,
-  numero: Number
-}, { _id: false })
-
-const TeamSchema = new mongoose.Schema({
-  nome: { type: String, required: true, unique: true },
-  logo: { type: String }, // 👈 campo para o escudo
-  estado: String,
-  cidade: String,
-  fundacao: Number,
-  cores: [String],
-  estadio: {
-    nome: String,
-    capacidade: Number
+const TeamSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    state: { type: String, required: true }, // Ex: SP, RJ, MG
+    founded: { type: Number },
+    stadium: { type: String },
+    capacity: { type: Number },
   },
-  elenco: [PlayerSchema],
-  temporada: { type: Number, default: 2025 }
-}, { timestamps: true })
+  { timestamps: true }
+);
 
-export default mongoose.model("Team", TeamSchema, "times");
+module.exports = mongoose.model("Team", TeamSchema);
