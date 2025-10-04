@@ -1,42 +1,63 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
-import { useNavigate } from "react-router-dom";
-import { TextField, Button, Container, Typography, Box, Paper } from "@mui/material";
+import { Container, Typography, TextField, Button, Paper, Box } from "@mui/material";
 
-function CreateTeam() {
+function EditTeam() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [state, setState] = useState("");
   const [founded, setFounded] = useState("");
   const [stadium, setStadium] = useState("");
   const [capacity, setCapacity] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTeam() {
+      try {
+        const res = await api.get(`/teams/${id}`);
+        const team = res.data;
+        setName(team.name);
+        setState(team.state);
+        setFounded(team.founded);
+        setStadium(team.stadium);
+        setCapacity(team.capacity);
+      } catch (err) {
+        alert("Erro ao carregar dados do time");
+        navigate("/teams");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchTeam();
+  }, [id, navigate]);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setLoading(true);
     try {
-      await api.post("/teams", {
+      await api.put(`/teams/${id}`, {
         name,
         state,
         founded: Number(founded),
         stadium,
         capacity: Number(capacity),
       });
-      alert("Time criado com sucesso!");
+      alert("Time atualizado com sucesso!");
       navigate("/teams");
     } catch (err) {
-      alert("Erro ao criar time. Verifique se está logado.");
-    } finally {
-      setLoading(false);
+      alert("Erro ao atualizar time");
     }
   }
+
+  if (loading) return <Typography>Carregando dados do time...</Typography>;
 
   return (
     <Container maxWidth="sm">
       <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
         <Typography variant="h5" gutterBottom>
-          Cadastrar Novo Time
+          Editar Time
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <TextField label="Nome do time" value={name} onChange={(e) => setName(e.target.value)} required />
@@ -44,8 +65,8 @@ function CreateTeam() {
           <TextField label="Ano de fundação" type="number" value={founded} onChange={(e) => setFounded(e.target.value)} required />
           <TextField label="Estádio" value={stadium} onChange={(e) => setStadium(e.target.value)} required />
           <TextField label="Capacidade" type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} required />
-          <Button type="submit" variant="contained" color="primary" disabled={loading}>
-            {loading ? "Salvando..." : "Salvar"}
+          <Button type="submit" variant="contained" color="primary">
+            Salvar Alterações
           </Button>
         </Box>
       </Paper>
@@ -53,4 +74,4 @@ function CreateTeam() {
   );
 }
 
-export default CreateTeam;
+export default EditTeam;
